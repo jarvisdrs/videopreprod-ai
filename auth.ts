@@ -1,9 +1,9 @@
-import NextAuth from "next-auth"
+import NextAuth, { type NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/prisma"
+import { prisma } from "./lib/prisma"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const config: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
@@ -24,8 +24,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: {
     strategy: "database",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
   callbacks: {
     session: ({ session, user }) => ({
@@ -33,21 +33,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       user: {
         ...session.user,
         id: user.id,
-        role: user.role,
+        role: (user as any).role,
       },
     }),
-    signIn: async ({ user, account, profile }) => {
-      // Permetti sempre il login con Google
-      if (account?.provider === "google") {
-        return true
-      }
-      return true
-    },
   },
   events: {
     createUser: async ({ user }) => {
-      // Eventuali azioni quando un nuovo utente viene creato
-      console.log("New user created:", user.email)
+      console.log("New user created:", (user as any).email)
     },
   },
-})
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config)
