@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
+// Force dynamic to avoid build-time rendering
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 // Lazy initialization - only when needed
 let openai: OpenAI | null = null
 
