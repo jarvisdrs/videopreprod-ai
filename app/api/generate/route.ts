@@ -1,16 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy initialization - only when needed
+let openai: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY not configured')
+    }
+    openai = new OpenAI({ apiKey })
+  }
+  return openai
+}
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to environment variables.' },
+        { status: 503 }
+      )
+    }
+
     const { type, prompt, outline } = await req.json()
 
     if (type === 'outline') {
-      const completion = await openai.chat.completions.create({
+      const completion = await getOpenAI().chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
@@ -40,7 +58,7 @@ Keep the outline clear and actionable for video production.`,
     }
 
     if (type === 'script') {
-      const completion = await openai.chat.completions.create({
+      const completion = await getOpenAI().chat.completions.create({
         model: 'gpt-4',
         messages: [
           {
