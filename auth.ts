@@ -5,6 +5,7 @@ import { prisma } from "./lib/prisma"
 
 const config: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
