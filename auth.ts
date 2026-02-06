@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/error",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
   },
@@ -37,32 +37,32 @@ export const authOptions: NextAuthOptions = {
       console.log("[NextAuth] SignIn callback:", { user: user?.email, provider: account?.provider })
       return true
     },
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        role: (user as any).role,
-      },
-    }),
+    jwt: async ({ token, user, account }) => {
+      if (user) {
+        token.id = user.id
+        token.role = (user as any).role || "USER"
+      }
+      return token
+    },
+    session: async ({ session, token }) => {
+      if (token) {
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+      }
+      return session
+    },
     redirect: ({ url, baseUrl }) => {
-      // Ignora baseUrl dalla richiesta, usa sempre il canonical
       const canonicalUrl = "https://videopreprod-ai.vercel.app"
       
-      // Se è un URL assoluto esterno, convertilo in relativo
       if (url.startsWith("http") && !url.startsWith(canonicalUrl)) {
         url = url.replace(/^https?:\/\/[^\/]+/, "")
       }
       
-      // Dopo login vai sempre alla dashboard
       if (url === "/login" || url === "/auth/error") {
         return `${canonicalUrl}/dashboard`
       }
-      // Se l'URL è relativo, usa canonicalUrl
       if (url.startsWith("/")) return `${canonicalUrl}${url}`
-      // Se l'URL è già sul dominio canonico, consentilo
       if (url.startsWith(canonicalUrl)) return url
-      // Fallback alla dashboard
       return `${canonicalUrl}/dashboard`
     },
   },
