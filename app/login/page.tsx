@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { GoogleSignInButton } from "@/components/auth/google-signin-button"
-import { authOptions } from "@/auth"
+import { authOptions } from "@/lib/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function LoginPage() {
