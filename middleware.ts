@@ -1,20 +1,11 @@
-import { withAuth } from "next-auth/middleware"
-
-export default withAuth({
-  pages: {
-    signIn: "/login",
-  },
-})
+// Middleware disabilitato temporaneamente per testare JWT session
+// TODO: Riabilitare dopo aver fixato il problema sessione
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/api/protected/:path*",
-    "/projects/:path*",
-    "/scripts/:path*",
-    "/tasks/:path*",
-    "/team/:path*",
-    "/budget/:path*",
-    "/locations/:path*",
-  ],
+  matcher: [],
+}
+
+export default function middleware() {
+  // Nessun controllo — tutte le pagine sono accessibili
+  return null
 }
