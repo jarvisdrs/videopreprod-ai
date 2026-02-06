@@ -19,7 +19,9 @@ export const authOptions: NextAuthOptions = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
-          redirect_uri: "https://videopreprod-ai.vercel.app/api/auth/callback/google"
+          redirect_uri: process.env.VERCEL_URL 
+            ? `https://${process.env.VERCEL_URL}/api/auth/callback/google`
+            : "http://localhost:3000/api/auth/callback/google"
         },
       },
     }),
@@ -40,7 +42,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
     callbackUrl: {
@@ -49,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
     csrfToken: {
@@ -58,7 +60,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       },
     },
   },
@@ -83,7 +85,10 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     redirect: ({ url, baseUrl }) => {
-      const canonicalUrl = "https://videopreprod-ai.vercel.app"
+      // Determina il canonical URL in base all'ambiente
+      const canonicalUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : baseUrl || "http://localhost:3000"
       
       if (url.startsWith("http") && !url.startsWith(canonicalUrl)) {
         url = url.replace(/^https?:\/\/[^\/]+/, "")
