@@ -1,7 +1,10 @@
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { prisma } from "./prisma"
-import { authOptions } from "@/auth"
+import { authOptions as rootAuthOptions } from "@/auth"
+
+// Re-export authOptions from root auth.ts for backward compatibility
+export const authOptions = rootAuthOptions
 
 /**
  * Ottiene l'utente corrente dalla sessione
