@@ -1,5 +1,8 @@
 'use client'
 
+import { useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, FileText, Calendar, DollarSign, Users } from 'lucide-react'
@@ -43,6 +46,30 @@ const stats = [
 ]
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  
+  // Reindirizza al login se non autenticato
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+  
+  // Mostra loading mentre verifica la sessione
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+  
+  // Se non autenticato, non mostrare nulla (verrà reindirizzato)
+  if (status === "unauthenticated") {
+    return null
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
