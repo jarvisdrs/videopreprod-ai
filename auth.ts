@@ -5,6 +5,9 @@ import { adapter } from "./lib/adapter"
 const config: NextAuthConfig = {
   adapter,
   secret: process.env.AUTH_SECRET,
+  // Necessario per Vercel
+  trustHost: true,
+  basePath: "/api/auth",
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

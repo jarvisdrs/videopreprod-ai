@@ -1,13 +1,14 @@
-import { auth } from "@/auth"
+import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { prisma } from "./prisma"
+import { authOptions } from "@/auth"
 
 /**
  * Ottiene l'utente corrente dalla sessione
  * @returns L'utente corrente o null se non autenticato
  */
 export async function getCurrentUser() {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   
   if (!session?.user?.id) {
     return null
@@ -119,11 +120,11 @@ export type AuthenticatedUser = NonNullable<
 >
 
 /**
- * Hook lato server per proteggere API routes
- * @returns Sessione utente validata
+ * Ottiene la sessione server-side
+ * @returns Sessione utente o null
  */
-export async function getServerSession() {
-  const session = await auth()
+export async function getSession() {
+  const session = await getServerSession(authOptions)
   
   if (!session?.user) {
     return null
