@@ -76,6 +76,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: async ({ session, token }) => {
       if (token) {
+        session.user = session.user || {}
         session.user.id = token.id as string
         session.user.role = token.role as string
       }
@@ -97,9 +98,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    createUser: async ({ user }) => {
-      console.log("New user created:", (user as any).email)
-    },
+    // createUser disabilitato — nessun adapter attivo
+    // createUser: async ({ user }) => {
+    //   console.log("New user created:", (user as any).email)
+    // },
   },
 }
 
